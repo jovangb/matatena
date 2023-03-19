@@ -1,0 +1,26 @@
+<ion-content>
+  <div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center main h-100">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body text-center mb-2">
+                    <div class="card-title"><h1>Matatena.</h1></div>
+                    <div class="card-text">
+                      <form [formGroup]="loginForm" (ngSubmit)="onLoginHandler()">
+                        <div class="correo mb-3">
+                          <input type="text" formControlName="email" placeholder="E-mail" class="form-control">
+                        </div>
+                        <div class="pass mb-3">
+                            <input type="password" formControlName="password" placeholder="Contraseña" class="form-control">
+                        </div>
+                        <div class="d-grid">
+                          <button href="" class="btn btn-success">Iniciar Sesión</button>
+                        </div>
+                      </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Agregar productos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container p-lg-4 py-4 px-0">
+    <div class="row">
+      <div class="col">
+        <form [formGroup]="productForm" class="row" (ngSubmit)="addProduct()">
+          <div class="col-6 mb-2"><input formControlName="code" type="text" class="form-control" placeholder="Código"></div>
+          <div class="col-6 mb-2"><input formControlName="productType" type="text" class="form-control" placeholder="Tipo"></div>
+          <div class="col-12 mb-2"><input formControlName="name" type="text" class="form-control" placeholder="Nombre"></div>
+          <div class="col-12 mb-2 input-group">
+            <span class="input-group-text">$</span>
+            <input formControlName="price" type="number" class="form-control" placeholder="Precio">
+          </div>
+          <div class="col-6 mb-2"><input formControlName="size" type="text" class="form-control" placeholder="Talla"></div>
+          <div class="col-6 mb-2"><input formControlName="quantity" type="number" class="form-control" placeholder="Cantidad"></div>
+          <div class="col-12 mb-4"><input formControlName="productCategory" type="text" class="form-control" placeholder="Categoría"></div>
+          <div class="d-grid"> <button [disabled]="productForm.invalid || excelFile === true" class="btn btn-success btn-block" type="submit">Agregar</button> </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="container p-lg-4 py-2 px-0">
+    <div class="row">
+      <div class="col text-center mb-3">
+        <h4 class="text-white">Ingrese un archivo EXCEL (XLSX solamente)</h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center d-grid">
+        <button class="btn btn-primary" (click)="downloadTemplate()"><ion-icon name="arrow-down-circle-outline"></ion-icon> Descargar plantilla</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="d-grid col-4 p-2">
+        <button class="btn  btn-primary text-center" *ngIf="newProducts.length > 0" disabled>
+          ({{newProducts.length}}) empleados agregados
+        </button>
+      </div>
+      <div class="d-grid p-2 col-4 p-2" *ngIf="newProducts.length > 0">
+        <button class="btn btn-success" (click)="submitNewProducts()">AGREGAR PRODUCTOS</button>
+      </div>
+        <div class="d-grid col-4 p-2" *ngIf="newProducts.length > 0">
+          <button class="btn btn-danger" (click)="onDeleteNewProducts()"><ion-icon name="trash-outline"></ion-icon>Eliminar archivo</button>
+        </div>
+    </div>
+    <div class="d-grid" *ngIf="newProducts.length === 0"> <button class="btn btn-dark" (click)="fileInput.click()"><ion-icon name="document-outline"></ion-icon>Cargar archivo XLSX</button> </div>
+
+    <!-- Handles the file browser -->
+    <input class="ion-hide" type="file" multiple="false" (change)="onReadExcelFile($event)" #fileInput
+    (click)="fileInput.value = null" value=""/>
+
+    <div class="table-container mt-3 overflow-scroll" *ngIf="newProducts.length > 0">
+      <table class="table table-bordered">
+        <thead>
+          <th class="p-2">Código</th>
+          <th class="p-2">Nombre</th>
+          <th class="p-2">Tipo</th>
+          <th class="p-2">Talla</th>
+          <th class="p-2">Cantidad</th>
+          <th class="p-2">Precio</th>
+          <th class="p-2">Categoría</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of newProducts">
+            <th scope="row">{{product.code}}</th>
+            <td>{{product.name}}</td>
+            <td>{{product.productType}}</td>
+            <td>{{product.size}}</td>
+            <td>{{product.quantity}}</td>
+            <td>$ {{product.price}}</td>
+            <td>{{product.productCategory}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ion-content>

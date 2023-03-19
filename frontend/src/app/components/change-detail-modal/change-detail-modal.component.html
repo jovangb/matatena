@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Cambio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="row p-3 justify-content-center">
+    <div class="col-12">
+      <ng-autocomplete
+      [data]="products"
+      placeholder="Ingresa un código"
+      [searchKeyword]="keyword"
+      [itemTemplate]="itemTemplate"
+      [notFoundTemplate]="notFoundTemplate"
+      (selected)="onSelectProduct($event)">
+      </ng-autocomplete>
+      <ng-template #itemTemplate let-item>
+        <a>{{item.name}} <span *ngIf="item.productType">({{item.productType}})</span><span *ngIf="item.size"> TALLA {{item.size}}</span></a>
+      </ng-template>
+
+      <ng-template #notFoundTemplate>
+        <div [innerHTML]="notFound"></div>
+      </ng-template>
+    </div>
+    <div class="col-6 d-grid mt-4">
+      <button class="btn btn-success" (click)="confirmChange()">Confirmar</button>
+    </div>
+  </div>
+</ion-content>

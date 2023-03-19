@@ -1,0 +1,123 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Ticket: {{ticket}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="row mt-2 p-2">
+    <div class="col">
+      <div class="card">
+        <div class="card-body p-0">
+          <ngx-datatable class="material"
+          [limit]="10"
+          [columns]="columns"
+          [rows]="rows"
+          [rowHeight]="50"
+          [limit]="10"
+          columnMode="force"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [scrollbarH]="true"
+          [selectionType]="SelectionType.single"
+          [rowClass]="getRowClass"
+          (select)="onSelectDetail($event)"
+          >
+            <ng-template #priceTemplate let-row="row" let-value="value" let-i="index">
+              $ {{value}}
+            </ng-template>
+          </ngx-datatable>
+        </div>
+        <div class="card-footer text-end">
+          <h5>Total: ${{total}}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row p-2" *ngIf="!changing">
+    <hr>
+    <div class="col">
+      <div class="card">
+        <div class="card-header">Cambios</div>
+        <div class="card-body">
+          <table class="table text-center" *ngFor="let change of changes">
+            <thead>
+              <tr>
+                <th colspan="5">Fecha: {{change.date}}</th>
+              </tr>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Producto</th>
+                <th scope="col"></th>
+                <th scope="col">Cambio</th>
+                <th scope="col">Diferencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detail of change.changes; let i = index">
+                <th scope="row">{{i + 1}}</th>
+                <td>({{detail.oldDetail.code}}) - {{detail.oldDetail.product}} ${{detail.oldDetail.price}}</td>
+                <td>&#8594;</td>
+                <td>({{detail.newDetail.code}}) - {{detail.newDetail.name}} ${{detail.newDetail.price}}</td>
+                <td>${{detail.difference}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row p-2" *ngIf="newChanges.length > 0">
+    <hr>
+    <div class="col">
+      <div class="card">
+        <div class="card-header">Nuevos cambios</div>
+        <div class="card-body">
+          <table class="table text-center">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Producto</th>
+                <th scope="col"></th>
+                <th scope="col">Cambio</th>
+                <th scope="col">Diferencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let change of newChanges; let i = index">
+                <th scope="row">{{i + 1}}</th>
+                <td>({{change.oldDetail.code}}) - {{change.oldDetail.product}} ${{change.oldDetail.price}}</td>
+                <td>&#8594;</td>
+                <td>({{change.newDetail.code}}) - {{change.newDetail.name}} ${{change.newDetail.price}}</td>
+                <td>${{change.difference}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row px-2 mb-2">
+    <div class="col d-grid">
+      <button class="btn btn-success" *ngIf="!changing " (click)="onChangeDetails()" [disabled]="!changeAvailable">
+        REALIZAR UN CAMBIO
+      </button>
+      <p class="text-center text-white" *ngIf="!changeAvailable">
+        NO ES POSIBLE HACER CAMBIOS  DE ESTA COMPRA
+      </p>
+      <div class="row" *ngIf="changing">
+        <div class="col d-grid">
+          <button class="btn btn-danger" (click)="onCancelChange()">CANCELAR</button>
+        </div>
+        <div class="col d-grid">
+          <button class="btn btn-success" [disabled]="newChanges.length <= 0" (click)="onConfirmChange()">CONFIRMAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

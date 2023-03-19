@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Editar producto</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container p-lg-4 py-4 px-0">
+    <div class="row">
+      <div class="col">
+        <form [formGroup]="productForm" class="row" (ngSubmit)="editProduct()">
+          <div class="col-6 mb-2"><input formControlName="code" type="text" class="form-control" placeholder="Código"></div>
+          <div class="col-6 mb-2"><input formControlName="productType" type="text" class="form-control" placeholder="Tipo"></div>
+          <div class="col-12 mb-2"><input formControlName="name" type="text" class="form-control" placeholder="Nombre"></div>
+          <div class="col-12 mb-2 input-group">
+            <span class="input-group-text">$</span>
+            <input formControlName="price" type="number" class="form-control" placeholder="Precio">
+          </div>
+          <div class="col-6 mb-2"><input formControlName="size" type="text" class="form-control" placeholder="Talla"></div>
+          <div class="col-6 mb-2"><input formControlName="quantity" type="number" class="form-control" placeholder="Cantidad"></div>
+          <div class="col-12 mb-4"><input formControlName="productCategory" type="text" class="form-control" placeholder="Categoría"></div>
+          <div class="d-grid col-6" *ngIf="edit"> <button class="btn btn-danger btn-block" (click)="onCancelEdition()">Cancelar</button> </div>
+          <div class="d-grid col-6" *ngIf="!edit"> <button class="btn btn-primary btn-block" (click)="onEditProduct()">Editar</button> </div>
+          <div class="d-grid col-6"> <button [disabled]="productForm.invalid || !edit" class="btn btn-success btn-block" type="submit">Guardar cambios</button> </div>
+        </form>
+        <div class="d-grid col-12 mt-2"> <button [disabled]="edit" class="btn btn-danger btn-block" (click)="onDeleteProduct()">Eliminar producto</button> </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

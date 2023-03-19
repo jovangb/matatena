@@ -1,0 +1,50 @@
+<ion-header class="ion-no-border page-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="page-title">
+      Productos
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container-fluid">
+    <div class="row h-100">
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-11">
+                <input type="text" class="form-control" placeholder="Buscar producto" (keyup)="updateFilter($event)">
+              </div>
+              <div class="col">
+                <button class="btn btn-success" (click)="addProducts()">Agregar</button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <ngx-datatable class="material"
+            [limit]="10"
+            [rows]="rows"
+            [rowHeight]="50"
+            [columns]="columns"
+            [rowClass]="getRowClass"
+            columnMode="force"
+            [headerHeight]="50"
+            [footerHeight]="50"
+            [scrollbarH]="true"
+            [selectionType]="SelectionType.single"
+            (select)="onSelectProduct($event)"
+            >
+            <ng-template #priceTemplate let-row="row" let-value="value" let-i="index">
+              $ {{value}}
+            </ng-template>
+            </ngx-datatable>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
