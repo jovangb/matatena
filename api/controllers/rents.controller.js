@@ -1,5 +1,5 @@
 //Models
-const { Rent } = require('../controllers/rents.controller');
+const { Rent } = require('../models/rents.model');
 
 //Utils
 const catchAsync = require('../utils/catchAsync');
@@ -25,7 +25,7 @@ exports.newRent = catchAsync(async (req, res, next) => {
 });
 
 exports.getRents = catchAsync(async (req, res, next) => {
-    const rents = await Rents.findAll({
+    const rents = await Rent.findAll({
         include: { all: true, nested: true}
     })
 

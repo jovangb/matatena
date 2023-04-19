@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {AutocompleteLibModule} from 'angular-ng-autocomplete';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -13,7 +15,9 @@ import { RentsPage } from './rents.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    RentsPageRoutingModule
+    RentsPageRoutingModule,
+    AutocompleteLibModule,
+    NgxDatatableModule
   ],
   declarations: [RentsPage]
 })

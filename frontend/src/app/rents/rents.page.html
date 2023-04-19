@@ -1,9 +1,127 @@
-<ion-header>
+<ion-header class="ion-no-border page-header">
   <ion-toolbar>
-    <ion-title>rents</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="page-title">
+      Rentas
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col">
+        <ul class="nav nav-pills nav-fill">
+          <li class="nav-item">
+            <a class="nav-link" [ngClass]="selected == 'rent' ? 'active' : ''" aria-current="page" (click)="selected = 'rent'">Rentas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [ngClass]="selected == 'manageRents' ? 'active' : ''" (click)="selected = 'manageRents'">Consultar rentas</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="row mt-4 sales-card" *ngIf="selected === 'rent'">
+      <div class="col-8">
+        <div class="card h-100">
+          <div class="card-body">
+            <ng-autocomplete
+            #productAutocomplete
+            [data]="products"
+            placeholder="Ingresa un código"
+            [searchKeyword]="keyword"
+            [itemTemplate]="itemTemplate"
+            [notFoundTemplate]="notFoundTemplate"
+            (selected)="onSelectedProduct($event)"
+            [disabled]="details.length > 0"
+            >
 
+            </ng-autocomplete>
+
+            <ng-template #itemTemplate let-item>
+              <a>{{item.name}} <span *ngIf="item.productType">({{item.productType}})</span><span *ngIf="item.size"> TALLA {{item.size}}</span></a>
+            </ng-template>
+
+            <ng-template #notFoundTemplate>
+              <div [innerHTML]="notFound"></div>
+            </ng-template>
+
+            <table class="table mt-3">
+              <tbody>
+                <tr *ngFor="let detail of details; let i = index;" class="align-middle">
+                  <th scope="row">{{i + 1}}</th>
+                  <td class="text-center">{{detail.name}} <span *ngIf="detail.productType">({{detail.productType}})</span><span *ngIf="detail.size"> TALLA {{detail.size}}</span></td>
+                  <td class="text-center">${{detail.price}}</td>
+                  <td class="text-center"><a (click)="removeDetail(detail, i)"><ion-icon name="close-circle-outline" class="text-danger" size="large"></ion-icon></a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <h4 class="fw-bold">Resumen</h4>
+                  </div>
+                  <div class="col text-end">
+                    <small>No.renta: {{lastRentNumber}}</small>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col d-flex align-items-center">
+                    <b class="align-middle">Total:</b>
+                  </div>
+                  <div class="col text-end"><h1 class="fw-bold">${{total}}</h1></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col d-grid">
+            <button class="btn btn-success" [disabled]="details.length < 1" (click)="rent()">
+              GENERAR RENTA
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4" *ngIf="selected === 'manageRents'">
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-12">
+                <input type="text" class="form-control" placeholder="Buscar ticket">
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <ngx-datatable class="material"
+            [limit]="10"
+            [columns]="columns"
+            [rows]="rows"
+            [rowHeight]="50"
+            [limit]="10"
+            columnMode="force"
+            [headerHeight]="50"
+            [footerHeight]="50"
+            [scrollbarH]="true"
+            >
+              <ng-template #totalTemplate let-row="row" let-value="value" let-i="index">
+                $ {{value}}
+              </ng-template>
+            </ngx-datatable>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>
