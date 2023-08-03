@@ -207,6 +207,7 @@ export class SaleDetailsComponent implements OnInit {
                   loading.dismiss();
                   this.uiUtils.showToast('Cambio realizado', 'success', 'middle', 1500);
                   //TODO: CERRAR MODAL Y RECARGAR VENTAS E IMPRIMIR TICKET
+                  this.modalCtrl.dismiss();
                 },
                 err => {
                   loading.dismiss();
