@@ -1,7 +1,14 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import moment from 'moment';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import esLocale from '@fullcalendar/core/locales/es';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+
+
+
 
 //Interfaces
 import { Product } from '../interfaces/product';
@@ -11,22 +18,38 @@ import { Rent } from '../interfaces/rent';
 import { UiUtilsService } from '../services/ui-utils.service';
 import { ProductService } from '../services/product.service';
 import { RentService } from '../services/rent.service';
+import { CalendarOptions } from '@fullcalendar/core';
+
+//Components
+import { RentDetailModalComponent } from '../components/rent-detail-modal/rent-detail-modal.component';
+import { FullCalendarComponent } from '@fullcalendar/angular';
 
 @Component({
   selector: 'app-rents',
   templateUrl: './rents.page.html',
-  styleUrls: ['./rents.page.scss'],
+  styleUrls: ['./rents.page.scss']
 })
 export class RentsPage implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('productAutocomplete') productAutocomplete;
   @ViewChild('totalTemplate') totalTemplate: TemplateRef<any>;
+  @ViewChild('calendar') calendar: FullCalendarComponent;
 
   products: Product[];
   keyword = 'code'
   notFound = 'Artículo no encontrado'
   details: Product[] = [];
   rents: Rent[] = [];
+  calendarOptions: CalendarOptions = {
+    plugins: [
+      dayGridPlugin,
+      timeGridPlugin, 
+      interactionPlugin,
+    ],
+    initialView: 'dayGridMonth',
+    locale: esLocale, //Adding Spanish
+    timeZone: 'UTC',
+  }
 
   //Manage rents variables
   columns: object[];
@@ -43,6 +66,7 @@ export class RentsPage implements OnInit {
     private productService: ProductService,
     private rentService: RentService,
     private alertCtrl: AlertController,
+    private modalCtrl: ModalController
   ) { }
 
   ionViewDidEnter(){
@@ -57,8 +81,16 @@ export class RentsPage implements OnInit {
   }
 
   ngOnInit() {
+    setTimeout( function() {
+      window.dispatchEvent(new Event('resize'))
+  },300)
     this.getProducts();
-    this.getRents();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.getRents();
+    }, 300);
   }
 
   removeDetail(product, index){
@@ -76,6 +108,7 @@ export class RentsPage implements OnInit {
   }
 
   getRents(){
+    let calendarApi = this.calendar.getApi();
     this.rentService.getRents().subscribe(
       rents => {
         rents.map(rent => {
@@ -89,6 +122,19 @@ export class RentsPage implements OnInit {
           this.lastRentNumber = 1
         }else{
           this.lastRentNumber = (rents[rents.length -1].ticket) + 1;
+          console.log(rents)
+          for (const rent of rents) {
+            let endDate = moment(rent.returning).add(1, 'day');//Adding 1 Day Code
+            
+            calendarApi.addEvent({
+              title: `${rent.product.name}`,
+              start: rent.deliver,
+              end: endDate.toISOString(), //Adding 1 Day Code
+              allDay: true
+            })
+            console.log(rent.deliver);
+            console.log(rent.returning);
+          }
         }
       }
     )
@@ -107,85 +153,15 @@ export class RentsPage implements OnInit {
   }
 
   async rent(){
-    const alert = await this.alertCtrl.create({
-      header: 'Método de pago',
-      inputs: [
-        {
-          type: 'radio',
-          label: 'Efectivo',
-          name: 'efectivo',
-          value: 'efectivo'
-        },
-        {
-          type: 'radio',
-          label: 'Tarjeta',
-          name: 'tarjeta',
-          value: 'tarjeta'
-        },
-      ],
-      buttons: [
-        {
-          text: 'Aceptar',
-          handler: async (value)  => {
-            if(!value){
-              return false;
-            }else{
-              let payment = value;
-              let date = moment().format();
-
-              const alert = await this.alertCtrl.create({
-                header: 'Depósito',
-                inputs: [
-                  {
-                    type: 'number',
-                    placeholder: 'Depósito',
-                    name: 'deposit',
-                  },
-                ],
-                buttons: [
-                  {
-                    text:  'Aceptar',
-                    handler: async({deposit}) => {
-                      if(!deposit){
-                        return false;
-                      }else{
-                        const rentInfo = {
-                          date,
-                          payment,
-                          deposit,
-                          productCode: this.details[0].code,
-                          total: this.total
-                        }
-
-                        const loading = await this.uiUtils.showLoadingPrefab();
-                        this.rentService.newRent(rentInfo).subscribe(
-                          res => {
-                            this.uiUtils.showToast('Venta realizada con éxito', 'success', 'middle', 1500);
-                            loading.dismiss();
-                            this.details = []
-                            this.total = 0
-                            this.getProducts();
-                            this.getRents();
-                          },
-                          err => {
-                            this.uiUtils.showToast(err.error.message, 'danger', 'middle', 1500);
-                            loading.dismiss();
-                          }
-                        )
-                      }
-                    }
-                  }
-                ]
-              })
-
-              alert.present();
-            }
-          }
-        }
-      ]
+    const modal = await this.modalCtrl.create({
+      component: RentDetailModalComponent,
+      componentProps:{
+        details: this.details,
+        total: this.total
+      }
     })
 
-    alert.present();
+    modal.present()
   }
 
 }

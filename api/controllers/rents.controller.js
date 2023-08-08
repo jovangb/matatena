@@ -10,6 +10,8 @@ exports.newRent = catchAsync(async (req, res, next) => {
         date, 
         payment,
         deposit,
+        deliver,
+        returning,
         total
     } = req.body;
 
@@ -18,6 +20,8 @@ exports.newRent = catchAsync(async (req, res, next) => {
         date,
         payment,
         deposit,
+        deliver,
+        returning,
         total
     })
 

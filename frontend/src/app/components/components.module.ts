@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { CalendarOptions } from '@fullcalendar/core';
 
 //Components
 import { MainMenuComponent } from './main-menu/main-menu.component';
@@ -11,6 +13,7 @@ import { SaleDetailsComponent } from './sale-details/sale-details.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ChangeDetailModalComponent } from './change-detail-modal/change-detail-modal.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { RentDetailModalComponent } from './rent-detail-modal/rent-detail-modal.component';
 
 
 @NgModule({
@@ -20,20 +23,23 @@ import { AutocompleteLibModule } from 'angular-ng-autocomplete';
     ProductEditionModalComponent,
     SaleDetailsComponent,
     ChangeDetailModalComponent,
+    RentDetailModalComponent
   ],
   imports: [
     CommonModule,
     IonicModule,
     ReactiveFormsModule,
     NgxDatatableModule,
-    AutocompleteLibModule
+    AutocompleteLibModule,
+    FullCalendarModule
   ],
   exports: [
     MainMenuComponent,
     ProductRegistrationModalComponent,
     ProductEditionModalComponent,
     SaleDetailsComponent,
-    ChangeDetailModalComponent
+    ChangeDetailModalComponent,
+    RentDetailModalComponent
   ]
 })
 export class ComponentsModule { }

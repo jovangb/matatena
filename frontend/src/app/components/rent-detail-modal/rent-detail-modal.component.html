@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Depósito y fecha</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="container p-lg-4 py-4 px-0 paymentgroup">
+    <div class="row">
+      <div class="col">
+        <form [formGroup]="rentForm" class="row" (ngSubmit)="rent()">
+          <div class="col-12">
+            <ion-radio-group formControlName="payment" class="paymentgroup">
+              <ion-item class="item col-5">
+                <ion-label>Efectivo</ion-label>
+                <ion-radio value="efectivo"></ion-radio>
+              </ion-item>
+              <ion-item class="item col-5">
+                <ion-label class="">Tarjeta</ion-label>
+                <ion-radio value="tarjeta"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </div>
+          <div class="paymentgroup">
+            <ion-item class="col-11 depoitem mt-3 mb-3 item">
+              <ion-label floating >Depósito</ion-label>
+              <ion-input formControlName="deposit" type="number" placeholder="Monto" class="depinput"></ion-input>
+            </ion-item>
+          </div>
+          <div class="paymentgroup">
+            <div class="col-5 mb-0">
+              <p class="mb-0">Fecha de Renta</p>
+            </div>
+            <div class="col-5 mb-0">
+              <p class="mb-0">Fecha de Devolución</p>
+            </div>
+          </div>
+          <div class="paymentgroup">
+            <div class="col-5 mb-2"><input formControlName="deliver" type="date" class="form-control rentday"></div>
+            <div class="col-5 mb-2"><input formControlName="return" type="date" class="form-control rentday"></div>
+          </div>
+          <div class="d-grid col-12 mt-3 d-flex justify-content-center"> <button [disabled]="rentForm.invalid" class="btn btn-success btn-block" type="submit">Aceptar</button> </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

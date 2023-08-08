@@ -28,6 +28,7 @@
 $success: #2ecc71;
 @import "node_modules/bootstrap/scss/bootstrap";
 
+
 ion-content{
   --ion-background-color:#3498db;
 }
@@ -68,4 +69,38 @@ ngx-datatable{
 }
 
 
+.fc .fc-col-header-cell-cushion {
+  display: inline-block;
+  padding: 2px 4px;
+  color: black;
+  text-decoration: none;
+}
+
+.fc .fc-daygrid-day-number {
+  padding: 4px;
+  position: relative;
+  z-index: 4;
+  color: black;
+  text-decoration: none;
+}
+
+.label-white-bg label .custom-label{
+  background-color: white;
+  background: white;
+}
+
+ion-item{
+  --ion-background-color: #ffffff !important;
+  border-radius: 5px;
+  margin-bottom: 6px;
+}
+
+ion-input.depinput{
+  margin-left: 70%;
+}
+
+ion-item.depoitem{
+  border-radius: 5px !important;
+
+}
 

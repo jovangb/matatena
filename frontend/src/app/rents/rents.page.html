@@ -123,5 +123,14 @@
         </div>
       </div>
     </div>
+    <div class="row mt-3" *ngIf="selected === 'manageRents'">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <full-calendar #calendar defaultView="dayGridMonth" [options]="calendarOptions"></full-calendar>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </ion-content>

@@ -29,6 +29,14 @@ const Rent = sequelize.define(
         total: {
             type: DataTypes.FLOAT,
             allowNull: false
+        },
+        deliver: {
+            type: DataTypes.DATE,
+            allowNull: false
+        },
+        returning: {
+            type: DataTypes.DATE,
+            allowNull: false
         }
     }
 );
