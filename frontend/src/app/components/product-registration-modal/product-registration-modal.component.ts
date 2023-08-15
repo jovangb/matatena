@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+// import * as pdfMake from 'pdfmake/build/pdfmake';
+// import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+// import * as JsBarcode from 'jsbarcode';
 
 //Interfaces
 import { Product } from 'src/app/interfaces/product';
@@ -48,6 +51,10 @@ export class ProductRegistrationModalComponent implements OnInit {
     else{
       this.newProducts.push(this.productForm.value);
       this.submitNewProducts();
+      // if (this.newProducts.length > 0) {
+      //   const product = this.newProducts[0];
+      //   this.generateBarcodePDF(product.code);
+      // }
     }
   }
 
@@ -117,6 +124,11 @@ export class ProductRegistrationModalComponent implements OnInit {
     this.uiUtils.showToast(successToastMessage, 'success', 'middle', 2000);
 
     this.newProducts = fileData;
+
+    // for (const product of this.newProducts) {
+    //     this.generateBarcodePDF(product.code);
+    // }
+
   }
 
   onDeleteNewProducts(){
@@ -125,4 +137,37 @@ export class ProductRegistrationModalComponent implements OnInit {
     this.productForm.enable();
   }
 
+  // generateBarcodePDF(productCode: number) {
+  //   try {
+  //     // Creating CodeBar
+  //     const barcodeCanvas = document.createElement('canvas');
+  //     JsBarcode(barcodeCanvas, productCode.toString(), {
+  //       format: 'CODE128',
+  //       displayValue: false,
+  //     });
+
+  //     // Codebar to image
+  //     const barcodeImageUrl = barcodeCanvas.toDataURL('image/png');
+
+  //     // Creating PDF 
+  //     const docDefinition = {
+  //       content: [
+  //         {
+  //           image: barcodeImageUrl,
+  //           width: 200,
+  //           alignment: 'center',
+  //         },
+  //         { text: productCode, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
+  //       ],
+  //       defaultStyle:{
+  //         font: 'Roboto'
+  //       }
+  //     };
+
+  //     pdfMake.createPdf(docDefinition).download(`${productCode}_barcode.pdf`);
+  //   } catch (error) {
+  //     console.error('Error al generar el código de barras y el PDF:', error);
+  //   }
+  // }
+  
 }

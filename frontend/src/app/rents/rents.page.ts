@@ -1,13 +1,12 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import moment from 'moment';
-import { AlertController, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import esLocale from '@fullcalendar/core/locales/es';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-
-
+import { EventInput } from '@fullcalendar/core';
 
 
 //Interfaces
@@ -23,6 +22,7 @@ import { CalendarOptions } from '@fullcalendar/core';
 //Components
 import { RentDetailModalComponent } from '../components/rent-detail-modal/rent-detail-modal.component';
 import { FullCalendarComponent } from '@fullcalendar/angular';
+
 
 @Component({
   selector: 'app-rents',
@@ -40,6 +40,7 @@ export class RentsPage implements OnInit {
   notFound = 'Artículo no encontrado'
   details: Product[] = [];
   rents: Rent[] = [];
+  calendarEvents: EventInput[] = [];
   calendarOptions: CalendarOptions = {
     plugins: [
       dayGridPlugin,
@@ -55,18 +56,19 @@ export class RentsPage implements OnInit {
   columns: object[];
   rows = [];
   temp = [];
+  rentsList: Rent[] = [];
 
   //Class variables
   selected: 'rent' | 'manageRents' = 'manageRents';
   total: number = 0;
   lastRentNumber = 0;
 
+
   constructor(
     private uiUtils: UiUtilsService,
     private productService: ProductService,
     private rentService: RentService,
-    private alertCtrl: AlertController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
   ) { }
 
   ionViewDidEnter(){
@@ -83,14 +85,12 @@ export class RentsPage implements OnInit {
   ngOnInit() {
     setTimeout( function() {
       window.dispatchEvent(new Event('resize'))
-  },300)
+  },400)
+    this.getRents();
     this.getProducts();
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.getRents();
-    }, 300);
   }
 
   removeDetail(product, index){
@@ -108,11 +108,13 @@ export class RentsPage implements OnInit {
   }
 
   getRents(){
-    let calendarApi = this.calendar.getApi();
     this.rentService.getRents().subscribe(
       rents => {
+        this.calendarEvents = [];
+        this.rentsList = [];
         rents.map(rent => {
           rent.formattedDate = moment(rent.date).locale('es').format('LLL')
+          this.rentsList.push(rent); 
         })
         this.rents = rents;
         this.rows = this.rents;
@@ -122,20 +124,18 @@ export class RentsPage implements OnInit {
           this.lastRentNumber = 1
         }else{
           this.lastRentNumber = (rents[rents.length -1].ticket) + 1;
-          console.log(rents)
-          for (const rent of rents) {
-            let endDate = moment(rent.returning).add(1, 'day');//Adding 1 Day Code
-            
-            calendarApi.addEvent({
-              title: `${rent.product.name}`,
-              start: rent.deliver,
-              end: endDate.toISOString(), //Adding 1 Day Code
-              allDay: true
-            })
-            console.log(rent.deliver);
-            console.log(rent.returning);
-          }
         }
+        this.rentsList.forEach(
+          rent => {
+          let endDate = moment(rent.returning).add(1, 'day');
+          this.calendarEvents.push({
+            title: rent.product.name,
+            start: rent.deliver,
+            end: endDate.toISOString(),
+            allDay: true
+          });
+        });
+        console.log(this.calendarEvents)
       }
     )
   }
@@ -162,6 +162,11 @@ export class RentsPage implements OnInit {
     })
 
     modal.present()
+    modal.onDidDismiss()
+    .then(() => {
+      this.calendarEvents = [];
+      this.getRents();
+    });
   }
 
 }

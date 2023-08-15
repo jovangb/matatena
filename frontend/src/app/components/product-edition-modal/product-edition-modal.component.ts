@@ -2,6 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as JsBarcode from 'jsbarcode';
 
 //Interfaces
 import { Product } from 'src/app/interfaces/product';
@@ -122,4 +124,108 @@ export class ProductEditionModalComponent implements OnInit {
     this.modalCtrl.dismiss(this.updatedProduct);
   }
 
+  onTaggingProduct(){
+    const productcode = this.product.code
+    const quantity = this.product.quantity
+    const productname = this.product.name
+    const productsize = this.product.size.toString()
+    this.generateBarcodePDF(productcode, quantity, productname,productsize);
+  }
+
+  generateBarcodePDF(productCode: number, quantity: number, productname: string, productsize: string) {
+    try {
+      
+      // Creating CodeBar
+      const barcodeCanvas = document.createElement('canvas');
+      JsBarcode(barcodeCanvas, productCode.toString(), {
+        format: 'CODE128',
+        displayValue: false,
+      });
+
+      // Codebar to image
+      const barcodeImageUrl = barcodeCanvas.toDataURL('image/png');
+
+      var content = [
+        {
+          image: barcodeImageUrl,
+          width: 50,
+          height: 40,
+          alignment: 'center',
+          margin: [0, 0, 0, 0]
+        },
+        { text: `${productname} - ${productsize}` , fontSize: 12, alignment: 'center', margin: [0, 0, 0, 0], },
+        // {
+          
+        //   image: barcodeImageUrl,
+        //   width: 100,
+        //   heigh: 50,
+        //   alignment: 'center',
+        // },
+        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
+        // {
+        //   image: barcodeImageUrl,
+        //   width: 100,
+        //   heigh: 50,
+        //   alignment: 'center',
+        // },
+        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
+        // {
+        //   image: barcodeImageUrl,
+        //   width: 100,
+        //   heigh: 50,
+        //   alignment: 'center',
+        // },
+        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
+        // {
+        //   image: barcodeImageUrl,
+        //   width: 100,
+        //   heigh: 50,
+        //   alignment: 'center',
+        // },
+        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
+      ]
+      var customPageSize = { width: 216, height: 144 };
+
+      // Creating PDF 
+      const docDefinition = {
+        pageSize: customPageSize,
+        content: [
+
+        ],
+        
+        defaultStyle:{
+          font: 'Roboto'
+        }
+      };
+      
+      for (var i = 0; i < this.product.quantity; i++){
+        docDefinition.content = docDefinition.content.concat(JSON.parse(JSON.stringify(content)));
+      }
+
+
+      this.printPDF(docDefinition, quantity);
+    } catch (error) {
+      console.error('Error al generar el código de barras y el PDF:', error);
+    }
+  }
+
+  printPDF(docDefinition, quantity) {
+    try {
+      const pdfDocument = pdfMake.createPdf(docDefinition);
+      pdfDocument.getBuffer((buffer) => {
+        const blob = new Blob([buffer], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        iframe.contentWindow.print();
+
+      });
+    } catch (error) {
+      console.error('Error al imprimir el PDF:', error);
+    }
+  }
+
 }
+

@@ -15,10 +15,10 @@
       <div class="col">
         <ul class="nav nav-pills nav-fill">
           <li class="nav-item">
-            <a class="nav-link" [ngClass]="selected == 'rent' ? 'active' : ''" aria-current="page" (click)="selected = 'rent'">Rentas</a>
+            <a class="nav-link" [ngClass]="selected == 'rent' ? 'active' : ''" aria-current="page" (click)="selected = 'rent'" >Rentas</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [ngClass]="selected == 'manageRents' ? 'active' : ''" (click)="selected = 'manageRents'">Consultar rentas</a>
+            <a class="nav-link" [ngClass]="selected == 'manageRents' ? 'active' : ''" (click)="selected = 'manageRents'" >Consultar rentas</a>
           </li>
         </ul>
       </div>
@@ -127,7 +127,7 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <full-calendar #calendar defaultView="dayGridMonth" [options]="calendarOptions"></full-calendar>
+            <full-calendar #calendar defaultView="dayGridMonth" [options]="calendarOptions" [events]="calendarEvents"></full-calendar>
           </div>
         </div>
       </div>

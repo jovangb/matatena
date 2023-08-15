@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import moment from 'moment';
@@ -17,6 +17,7 @@ export class RentDetailModalComponent implements OnInit {
   @Input() details: Product[]; 
   @Input() total: number; 
   rentForm: FormGroup
+  formIsValid: boolean = false;
 
   constructor(
     private modalCtrl: ModalController,
@@ -26,11 +27,15 @@ export class RentDetailModalComponent implements OnInit {
 
   ngOnInit() {
     this.rentForm = new FormGroup({
-      payment: new FormControl(Validators.required),
+      payment: new FormControl('', Validators.required),
       deposit: new FormControl(0, Validators.required),
-      deliver: new FormControl(Validators.required),
-      return: new FormControl(Validators.required)
-    })
+      deliver: new FormControl('', Validators.required),
+      return: new FormControl('', Validators.required),
+    });
+
+    this.rentForm.valueChanges.subscribe(() => {
+      this.formIsValid = this.rentForm.valid;
+    });
   }
 
   async rent(){
@@ -55,12 +60,14 @@ export class RentDetailModalComponent implements OnInit {
         this.total = 0
         // this.getProducts();
         // this.getRents();
+        this.modalCtrl.dismiss();
       },
       err => {
         this.uiUtils.showToast(err.error.message, 'danger', 'middle', 1500);
         loading.dismiss();
       }
     )
+    
   }
 
   onCancel(){
