@@ -7,6 +7,7 @@ import esLocale from '@fullcalendar/core/locales/es';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventInput } from '@fullcalendar/core';
+import {  JSPrintManager, InstalledPrinter, ClientPrintJob } from 'jsprintmanager';
 
 
 //Interfaces
@@ -85,7 +86,7 @@ export class RentsPage implements OnInit {
   ngOnInit() {
     setTimeout( function() {
       window.dispatchEvent(new Event('resize'))
-  },400)
+  },500)
     this.getRents();
     this.getProducts();
   }
@@ -152,6 +153,54 @@ export class RentsPage implements OnInit {
     }
   }
 
+  async print(saleInfo, total) {
+    JSPrintManager.auto_reconnect = true;
+    await JSPrintManager.start()
+
+    // Create a ClientPrintJob
+    var cpj = new ClientPrintJob();
+    // Set Printer type (Refer to the help, there many of them!)
+    cpj.clientPrinter = new InstalledPrinter('ZJ-58 11.3.0.1 U');
+
+    // Resto del código de impresión
+    var esc = '\x1B'; //ESC byte in hex notation
+    var newLine = '\x0A'; //LF byte in hex notation
+
+    var cmds = esc + "@"; //Initializes the printer (ESC @)
+    cmds += esc + '!' + '\x18'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+    cmds += 'Disfraces Matatena'; //text to print
+    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+    cmds += newLine + newLine;
+    cmds += 'No. de ticket: '+this.lastRentNumber;
+    cmds += newLine;
+    cmds += saleInfo[0].createdAt;
+    cmds += newLine+newLine;
+    cmds += 'ID'+'     ';
+    cmds += 'Producto';
+    cmds += '   '+'Precio';
+    cmds += newLine;
+    for(var i=0;i<saleInfo.length;i++){
+    cmds += JSON.stringify(saleInfo[i].code)+'  -  ';
+    cmds += JSON.stringify(saleInfo[i].name).substring(1,5);
+    cmds += '  -  $'+JSON.stringify(saleInfo[i].price);
+    cmds += newLine;
+    }
+    cmds += newLine + newLine;
+    cmds += 'Renta';
+    cmds += newLine;
+    cmds += esc + '!' + '\x16'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
+    cmds += 'TOTAL: $'+ total;
+    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+    cmds += newLine + newLine;
+    cmds += newLine+newLine+newLine+newLine;
+
+    cpj.printerCommands = cmds;
+
+    // Send print job to printer!
+    cpj.sendToClient()
+}
+
+
   async rent(){
     const modal = await this.modalCtrl.create({
       component: RentDetailModalComponent,
@@ -166,6 +215,7 @@ export class RentsPage implements OnInit {
     .then(() => {
       this.calendarEvents = [];
       this.getRents();
+      this.print(this.details, this.total);
     });
   }
 

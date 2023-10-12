@@ -12,5 +12,7 @@ export interface HttpResponse {
     notUploadedProducts: Product[]
     sales: Sale[]
     rents: Rent[]
+    salesDetails: any[]
+    changes: any[]
   }
 }

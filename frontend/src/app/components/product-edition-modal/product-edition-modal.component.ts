@@ -4,6 +4,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as JsBarcode from 'jsbarcode';
+// const vfs = pdfMake.vfs;
+// const robotoItalicPath = vfs['Roboto-Italic.ttf'];
 
 //Interfaces
 import { Product } from 'src/app/interfaces/product';
@@ -124,15 +126,45 @@ export class ProductEditionModalComponent implements OnInit {
     this.modalCtrl.dismiss(this.updatedProduct);
   }
 
-  onTaggingProduct(){
-    const productcode = this.product.code
-    const quantity = this.product.quantity
-    const productname = this.product.name
-    const productsize = this.product.size.toString()
-    this.generateBarcodePDF(productcode, quantity, productname,productsize);
+  async onTaggingProduct(){
+    const alerta = await this.alertCtrl.create({
+      header: 'Copias',
+      inputs: [
+          {
+              type: 'number',
+              name: 'quantity'
+          }
+      ],
+      buttons: [
+          {
+              text: 'Aceptar',
+              handler: async (data) => {
+                  const quantity = parseFloat(data.quantity); // Convierte el valor ingresado a un número
+                  if (!isNaN(quantity)) {
+                      const productcode = this.product.code;
+                      const productname = this.product.name;
+                      const productsize = this.product.size.toString();
+                      await this.generateBarcodePDF(productcode, quantity, productname, productsize);
+                  } else {
+                      console.log("Cantidad inválida");
+                  }
+              }
+          },
+      ],
+  });
+
+  alerta.present();
   }
 
   generateBarcodePDF(productCode: number, quantity: number, productname: string, productsize: string) {
+    pdfMake.fonts = {
+      Roboto: {
+        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
+        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
+        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
+      }
+    }
     try {
       
       // Creating CodeBar
@@ -145,44 +177,17 @@ export class ProductEditionModalComponent implements OnInit {
       // Codebar to image
       const barcodeImageUrl = barcodeCanvas.toDataURL('image/png');
 
-      var content = [
+      var content = [  
+        { text: this.product.code , fontSize: 12, alignment: 'left', margin: [20, 0, 0, 0]},
         {
           image: barcodeImageUrl,
-          width: 50,
-          height: 40,
-          alignment: 'center',
+          width: 220,
+          height: 100,
+          alignment: 'left',
           margin: [0, 0, 0, 0]
         },
-        { text: `${productname} - ${productsize}` , fontSize: 12, alignment: 'center', margin: [0, 0, 0, 0], },
-        // {
-          
-        //   image: barcodeImageUrl,
-        //   width: 100,
-        //   heigh: 50,
-        //   alignment: 'center',
-        // },
-        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
-        // {
-        //   image: barcodeImageUrl,
-        //   width: 100,
-        //   heigh: 50,
-        //   alignment: 'center',
-        // },
-        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
-        // {
-        //   image: barcodeImageUrl,
-        //   width: 100,
-        //   heigh: 50,
-        //   alignment: 'center',
-        // },
-        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
-        // {
-        //   image: barcodeImageUrl,
-        //   width: 100,
-        //   heigh: 50,
-        //   alignment: 'center',
-        // },
-        // { text: `${productname} - ${productsize}`, fontSize: 18, alignment: 'center', margin: [0, 0, 0, 10] },
+        { text: `${productname} - ${productsize}` , fontSize: 12, alignment: 'left', margin: [20, 0, 0, 40]},
+        
       ]
       var customPageSize = { width: 216, height: 144 };
 
@@ -194,11 +199,12 @@ export class ProductEditionModalComponent implements OnInit {
         ],
         
         defaultStyle:{
-          font: 'Roboto'
-        }
+          fonts: 'Roboto'
+        },
+        pageMargins: [0, 0, 0, 0],
       };
       
-      for (var i = 0; i < this.product.quantity; i++){
+      for (var i = 0; i < quantity; i++){
         docDefinition.content = docDefinition.content.concat(JSON.parse(JSON.stringify(content)));
       }
 

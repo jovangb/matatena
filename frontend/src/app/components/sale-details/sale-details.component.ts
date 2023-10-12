@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ModalController, AlertController } from '@ionic/angular';
-import { DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
+import { DatatableComponent, SelectionType, id } from '@swimlane/ngx-datatable';
 import moment from 'moment';
 
 //Services
@@ -16,8 +16,6 @@ import { SalesService } from 'src/app/services/sales.service';
 export class SaleDetailsComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('priceTemplate') priceTemplate: TemplateRef<any>;
-  @Input('details') details: any[];
-  @Input('changes') changes: any[];
   @Input('ticket') ticket: number;
   @Input('total') total: number;
   @Input('date') date: string;
@@ -30,6 +28,8 @@ export class SaleDetailsComponent implements OnInit {
   changing: boolean = false;
   newChanges: any[] = [];
   originalDetails: any[];
+  details: any[];
+  changes: any[];
 
   constructor(
     private modalCtrl: ModalController,
@@ -48,47 +48,75 @@ export class SaleDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.changes = this.changes.map(({change_details, date}) => {
-      return {
-        date: moment(date).locale('es').format('L'),
-        changes: change_details.map(change => {
-          return {
-            oldDetail: {
-              code: change.sale_detail.product.code,
-              product: change.sale_detail.product.name,
-              price: change.sale_detail.product.price
-            },
-            newDetail: {
-              code: change.product.code,
-              product: change.product.name,
-              price: change.product.price
-            },
-            difference: change.difference
-          }
-        })
-      }
-    })
-
-    console.log(this.changes);
-
-    this.originalDetails = JSON.parse(JSON.stringify(this.details));
-
-    this.rows = this.details.map(({id ,product, changed}) => {
-    return {
-      id,
-      code: product.code,
-      product: product.name,
-      size: product.size,
-      price: product.price,
-      changed
-    }
-    })
+    this.getSaleDetails();
+    this.getChangeDetails();
 
     if(moment().diff(moment(this.date).format(), 'days') <= 7){
       this.changeAvailable = true
     }else{
       this.changeAvailable = false
     }
+  }
+
+  getSaleDetails(){
+    this.salesService.getSalesDetails(this.ticket).subscribe(
+      salesDetails => {
+        console.log(salesDetails)
+        this.details = salesDetails;
+        this.rows = this.details.map(({id ,product, changed}) => {
+          return {
+            id,
+            code: product.code,
+            product: product.name,
+            size: product.size,
+            price: product.price,
+            changed
+          }
+          })
+        
+        this.originalDetails = JSON.parse(JSON.stringify(this.details));
+
+        this.rows = this.details.map(({id ,product, changed}) => {
+          return {
+            id,
+            code: product.code,
+            product: product.name,
+            size: product.size,
+            price: product.price,
+            changed
+          }
+          })
+      }
+    )
+  }
+
+  getChangeDetails(){
+    
+    this.salesService.getChangeDetails(this.ticket).subscribe(
+      changes => {
+        console.log(changes)
+        this.changes = changes.map(change => { 
+          return change.change_details.map((item: any) => {
+            console.log(item)
+            return {
+              oldDetail: {
+                code: item.sale_detail.product.code,
+                product: item.sale_detail.product.name,
+                price: item.sale_detail.product.price
+              },
+              newDetail: {
+                code: item.product.code,
+                name: item.product.name,
+                price: item.product.price
+              },
+              difference: item.difference,
+            }
+          }) 
+        })
+
+        console.log(this.changes)
+      }
+    )
   }
 
   getRowClass = (row) => {

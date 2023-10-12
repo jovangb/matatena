@@ -2,8 +2,11 @@
 const { Product } = require('../models/products.model')
 const { Sale } = require('../models/sale.model')
 const { SaleDetail } = require('../models/sale-detail.model');
+const { ChangeDetail } = require('../models/change-detail.model');
 const { sequelize } = require('../utils/database');
 const catchAsync = require('../utils/catchAsync');
+const { Change } = require('../models/changes.model');
+
 
 exports.newSale = catchAsync(async (req, res, next) => {
     const { 
@@ -55,12 +58,65 @@ exports.newSale = catchAsync(async (req, res, next) => {
 
 exports.getSales = catchAsync(async (req, res, next) => {
     const sales = await Sale.findAll({
-        include: { all: true, nested: true}
+        include: [
+            {
+                model: SaleDetail,
+                include: {
+                    model: Product
+                }
+            }
+        ]
     })
+    
 
     res.status(200).json({
         status: 'success',
         data: { sales }
+    })
+})
+
+exports.getSalesDetails = catchAsync(async(req,res,next)=>{
+    const { saleTicket } = req.params;
+
+    const salesDetails = await SaleDetail.findAll({
+        include: {
+            model: Product
+        },
+        where: {
+            saleTicket: saleTicket
+        }
+    })
+
+    res.status(200).json({
+        status: 'success',
+        data: { salesDetails }
+    })
+})
+
+exports.getChangeDetails = catchAsync(async(req,res,next)=>{
+    const { saleTicket } = req.params;
+
+    const changes = await Change.findAll({
+        include: [
+            {
+                model: ChangeDetail,
+                include: [
+                    {model: Product},
+                    {
+                        model: SaleDetail,
+                        include: Product
+                    }
+                ]    
+            }
+        ],
+        where: {
+            saleTicket: saleTicket
+        }
+    })
+    
+    res.status(200).json({
+        status: 'success',
+        data: { changes }
     })
 })
 

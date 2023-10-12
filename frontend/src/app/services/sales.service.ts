@@ -30,6 +30,17 @@ export class SalesService {
       })
     )
   }
+  
+  getSalesDetails(saleTicket: number){
+    return this.http.get<HttpResponse>(`${this.apiUrl}/saleDetails/${saleTicket}`)
+    .pipe(
+      switchMap(async res => {
+        const { salesDetails } = res.data
+
+        return salesDetails;
+      })
+    )
+  }
 
   newSale(saleInfo: Sale){
     return this.http.post<HttpResponse>(`${this.apiUrl}`, saleInfo)
@@ -46,6 +57,17 @@ export class SalesService {
     .pipe(
       switchMap(async res => {
         return res;
+      })
+    )
+  }
+
+  getChangeDetails(saleTicket: number){
+    return this.http.get<HttpResponse>(`${this.apiUrl}/changeDetails/${saleTicket}`)
+    .pipe(
+      switchMap(async res => {
+        const { changes } = res.data
+
+        return changes;
       })
     )
   }

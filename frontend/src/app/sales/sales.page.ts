@@ -3,6 +3,7 @@ import moment from 'moment';
 import { AlertController } from '@ionic/angular';
 import { DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { ModalController } from '@ionic/angular';
+import {  JSPrintManager, InstalledPrinter, ClientPrintJob } from 'jsprintmanager';
 
 //Services
 import { ProductService } from '../services/product.service';
@@ -13,6 +14,7 @@ import { SalesService } from '../services/sales.service';
 //Interfaces
 import { Sale } from '../interfaces/sale';
 import { SaleDetailsComponent } from '../components/sale-details/sale-details.component';
+
 
 @Component({
   selector: 'app-sales',
@@ -33,6 +35,7 @@ export class SalesPage implements OnInit {
   total: number = 0;
   sales: Sale[];
   lastTicketNumber = 0
+  
 
   //Manage sales variables
   columns: object[];
@@ -40,12 +43,14 @@ export class SalesPage implements OnInit {
   temp = [];
   SelectionType = SelectionType
 
+  
+
   constructor(
     private productService: ProductService,
     private uiUtils: UiUtilsService,
     private salesService: SalesService,
     private alertCtrl: AlertController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
   ) { }
 
   ionViewDidEnter(){
@@ -62,6 +67,7 @@ export class SalesPage implements OnInit {
     this.getSales();
   }
 
+
   getProducts(){
     this.productService.getProducts().subscribe(
       products => {
@@ -73,6 +79,7 @@ export class SalesPage implements OnInit {
   getSales(){
     this.salesService.getSales().subscribe(
       sales => {
+        console.log(sales)
         sales.map(sale => {
           sale.formattedDate = moment(sale.date).locale('es').format('LLL')
         })
@@ -104,6 +111,54 @@ export class SalesPage implements OnInit {
     this.products.find(x => x.code === product.code).quantity = product.quantity + 1;
     this.total = this.total - this.products.find(x => x.code === product.code).price
     this.details.splice(index, 1);
+  }
+
+  // Do printing...
+  async print(saleInfo) {
+      JSPrintManager.auto_reconnect = true;
+      await JSPrintManager.start()
+
+      // Create a ClientPrintJob
+      var cpj = new ClientPrintJob();
+      // Set Printer type (Refer to the help, there many of them!)
+      cpj.clientPrinter = new InstalledPrinter('ZJ-58 11.3.0.1 U');
+  
+      // Resto del código de impresión
+      var esc = '\x1B'; //ESC byte in hex notation
+      var newLine = '\x0A'; //LF byte in hex notation
+  
+      var cmds = esc + "@"; //Initializes the printer (ESC @)
+      cmds += esc + '!' + '\x18'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+      cmds += 'Disfraces Matatena'; //text to print
+      cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+      cmds += newLine + newLine;
+      cmds += 'No. de ticket: '+this.lastTicketNumber;
+      cmds += newLine;
+      cmds += saleInfo.date;
+      cmds += newLine+newLine;
+      cmds += 'ID'+'     ';
+      cmds += 'Producto';
+      cmds += '   '+'Precio';
+      cmds += newLine;
+      for(var i=0;i<saleInfo.details.length;i++){
+      cmds += JSON.stringify(saleInfo.details[i].code)+'  -  ';
+      cmds += JSON.stringify(saleInfo.details[i].name).substring(1,5);
+      cmds += '  -  $'+JSON.stringify(saleInfo.details[i].price);
+      cmds += newLine;
+      }
+      cmds += newLine + newLine;
+      cmds += 'Metodo de pago: '+saleInfo.payment;
+      cmds += newLine;
+      cmds += esc + '!' + '\x16'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
+      cmds += 'TOTAL: $'+ saleInfo.total;
+      cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+      cmds += newLine + newLine;
+      cmds += newLine+newLine+newLine+newLine;
+  
+      cpj.printerCommands = cmds;
+  
+      // Send print job to printer!
+      cpj.sendToClient()
   }
 
   async purchase(){
@@ -148,6 +203,7 @@ export class SalesPage implements OnInit {
                   this.total = 0
                   this.getProducts();
                   this.getSales();
+                  this.print(saleInfo);
                 },
                 err => {
                   this.uiUtils.showToast(err.error.message, 'danger', 'middle', 1500);
@@ -168,8 +224,6 @@ export class SalesPage implements OnInit {
       component: SaleDetailsComponent,
       cssClass: 'details-modal',
       componentProps: {
-        details: selected[0].sale_details,
-        changes: selected[0].changes,
         ticket: selected[0].ticket,
         total: selected[0].total,
         date: selected[0].date

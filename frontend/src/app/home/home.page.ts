@@ -6,7 +6,13 @@ import { Component } from '@angular/core';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  imageUrl: string;
+
+  ngOnInit(){
+    const basePath = window.location.href;
+    console.log(window.location.href)
+    this.imageUrl = `${basePath}/assets/img/sales.svg`;
+  }
 
   constructor() {}
-
 }

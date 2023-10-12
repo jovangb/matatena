@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-12 h-100 d-flex blue-category">
           <div class="align-self-center ps-4 flex-fill">
-            <a href="/products" class="white-link">
+            <a (click)="onNavigate('products')" class="white-link">
               <ion-icon name="shirt-outline" size="large" class="align-middle"></ion-icon> &nbsp; <span class="align-middle">Productos</span>
             </a>
           </div>
@@ -18,7 +18,7 @@
       <div class="row">
         <div class="col-12 h-100 d-flex">
           <div class="align-self-center ps-4 flex-fill">
-            <a href="/sales">
+            <a (click)="onNavigate('sales')" class="primary">
               <ion-icon name="cash-outline" size="large" class="align-middle"></ion-icon> &nbsp; <span class="align-middle">Ventas</span>
             </a>
           </div>
@@ -27,7 +27,7 @@
       <div class="row">
         <div class="col-12 h-100 d-flex blue-category">
           <div class="align-self-center ps-4 flex-fill">
-            <a href="/rents" class="white-link">
+            <a (click)="onNavigate('rents')" class="white-link">
               <ion-icon name="pricetags-outline" size="large" class="align-middle"></ion-icon> &nbsp; <span class="align-middle">Rentas</span>
             </a>
           </div>

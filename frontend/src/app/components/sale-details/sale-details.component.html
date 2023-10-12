@@ -59,7 +59,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let detail of change.changes; let i = index">
+              <tr *ngFor="let detail of changes[0]; let i = index">
                 <th scope="row">{{i + 1}}</th>
                 <td>({{detail.oldDetail.code}}) - {{detail.oldDetail.product}} ${{detail.oldDetail.price}}</td>
                 <td>&#8594;</td>
