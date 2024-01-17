@@ -48,7 +48,7 @@
           <table class="table text-center" *ngFor="let change of changes">
             <thead>
               <tr>
-                <th colspan="5">Fecha: {{change.date}}</th>
+                <th colspan="5">Fecha: {{this.date}}</th>
               </tr>
               <tr>
                 <th scope="col">#</th>
@@ -100,6 +100,13 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row px-2 mb-2">
+    <div class="col d-grid">
+      <button class="btn btn-primary" *ngIf="currentUser.name === 'admin'" (click)="onPrint()">
+        REEMPRIMIR TICKET
+      </button>
     </div>
   </div>
   <div class="row px-2 mb-2">

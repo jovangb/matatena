@@ -103,4 +103,11 @@ export class EmployeeService {
       })
     )
   }
+
+  async logoutEmployee() {
+    // Set employee to null and delete authData storage
+    await Preferences.remove({ key: PREFERENCES_KEYS.authData });
+    this._currentEmployee.next(null);
+    this.router.navigateByUrl('/login');
+  }
 }

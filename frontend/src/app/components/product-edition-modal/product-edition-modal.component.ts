@@ -13,6 +13,7 @@ import { Product } from 'src/app/interfaces/product';
 //Services
 import { UiUtilsService } from 'src/app/services/ui-utils.service';
 import { ProductService } from 'src/app/services/product.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-product-edition-modal',
@@ -20,17 +21,23 @@ import { ProductService } from 'src/app/services/product.service';
   styleUrls: ['./product-edition-modal.component.scss'],
 })
 export class ProductEditionModalComponent implements OnInit {
+  currentUser: any;
   @Input('product') product: Product;
   updatedProduct: boolean = false;
   productForm: FormGroup
   edit: boolean = false;
-
+  
   constructor(
     private modalCtrl: ModalController,
     private uiUtils: UiUtilsService,
     private productService: ProductService,
-    private alertCtrl: AlertController
-  ) { }
+    private alertCtrl: AlertController,
+    private employeeService: EmployeeService
+  ) { 
+    this.employeeService.currentEmployee.subscribe((user) => {
+      this.currentUser = user;
+    });
+  }
 
   ngOnInit() {
     this.productForm =  new FormGroup({
@@ -178,16 +185,24 @@ export class ProductEditionModalComponent implements OnInit {
       const barcodeImageUrl = barcodeCanvas.toDataURL('image/png');
 
       var content = [  
-        { text: this.product.code , fontSize: 12, alignment: 'left', margin: [20, 0, 0, 0]},
+        { text: this.product.code , fontSize: 9, alignment: 'center', margin: [0, 0, 0, 0]},
         {
           image: barcodeImageUrl,
-          width: 220,
-          height: 100,
-          alignment: 'left',
+          width: 90,
+          height: 40,
+          alignment: 'center',
           margin: [0, 0, 0, 0]
         },
-        { text: `${productname} - ${productsize}` , fontSize: 12, alignment: 'left', margin: [20, 0, 0, 40]},
-        
+        { text: `${productname} - ${productsize}` , fontSize: 9, alignment: 'center', margin: [0, 0, 0, 10]},
+        { text: this.product.code , fontSize: 9, alignment: 'center', margin: [0, 0, 0, 0]},
+        {
+          image: barcodeImageUrl,
+          width: 90,
+          height: 40,
+          alignment: 'center',
+          margin: [0, 0, 0, 0]
+        },
+        { text: `${productname} - ${productsize}` , fontSize: 9, alignment: 'center', margin: [0, 0, 0, 10]},
       ]
       var customPageSize = { width: 216, height: 144 };
 
@@ -204,7 +219,7 @@ export class ProductEditionModalComponent implements OnInit {
         pageMargins: [0, 0, 0, 0],
       };
       
-      for (var i = 0; i < quantity; i++){
+      for (var i = 0; i < quantity/2; i++){
         docDefinition.content = docDefinition.content.concat(JSON.parse(JSON.stringify(content)));
       }
 

@@ -7,6 +7,7 @@ import moment from 'moment';
 import { UiUtilsService } from 'src/app/services/ui-utils.service';
 import { ChangeDetailModalComponent } from '../change-detail-modal/change-detail-modal.component';
 import { SalesService } from 'src/app/services/sales.service';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-sale-details',
@@ -30,13 +31,19 @@ export class SaleDetailsComponent implements OnInit {
   originalDetails: any[];
   details: any[];
   changes: any[];
+  currentUser: any;
 
   constructor(
     private modalCtrl: ModalController,
     private uiUtils: UiUtilsService,
     private alertCtrl: AlertController,
-    private salesService: SalesService
-  ) { }
+    private salesService: SalesService,
+    private employeeService: EmployeeService
+  ) { 
+    this.employeeService.currentEmployee.subscribe((user) => {
+      this.currentUser = user;
+    });
+  }
 
   ionViewDidEnter(){
     this.columns = [
@@ -107,7 +114,7 @@ export class SaleDetailsComponent implements OnInit {
               newDetail: {
                 code: item.product.code,
                 name: item.product.name,
-                price: item.product.price
+                price: item.product.price,
               },
               difference: item.difference,
             }
@@ -253,6 +260,10 @@ export class SaleDetailsComponent implements OnInit {
     const changeInfo = {
 
     }
+  }
+
+  onPrint(){
+    console.log("Hola")
   }
 
 }

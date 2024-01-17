@@ -1,7 +1,10 @@
 <ion-menu contentId="main-content">
   <ion-header class="ion-no-border">
     <ion-toolbar>
-      <ion-title (click)="onNavigate('home')" class="fw-bold">Matatena.</ion-title>
+      <div class="row">
+        <ion-title (click)="onNavigate('home')" class="fw-bold col-5">Matatena.</ion-title>
+        <ion-button class="fw-bold col-6" (click)="logOut()">Cerrar Sesión</ion-button>
+      </div> 
     </ion-toolbar>
   </ion-header>
   <ion-content class="menu-body">

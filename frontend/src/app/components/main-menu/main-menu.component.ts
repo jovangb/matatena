@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { log } from 'console';
 import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
@@ -21,5 +22,16 @@ export class MainMenuComponent implements OnInit {
   onNavigate(route: 'products' | 'home' | 'rents' | 'sales'){
     this.router.navigateByUrl(`/${route}`)
     this.menuCtrl.toggle();
+  }
+
+
+  async logOut(){
+    try{
+      const logOut = await this.employeeService.logoutEmployee();
+      this.menuCtrl.toggle();
+    }
+    catch(error){
+      console.log("Ha ocurrido un error en el LogOut",error);
+    }
   }
 }

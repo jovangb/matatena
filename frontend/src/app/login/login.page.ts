@@ -49,8 +49,9 @@ export class LoginPage implements OnInit {
 
         this.uiUtils.showToast(err.error.message, 'danger', 'middle', 1500);
       }
-
     )
+    
+    this.loginForm.reset();
   }
 
 }
