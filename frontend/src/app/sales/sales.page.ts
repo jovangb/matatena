@@ -36,6 +36,7 @@ export class SalesPage implements OnInit {
   sales: Sale[];
   lastTicketNumber = 0
   
+  
 
   //Manage sales variables
   columns: object[];
@@ -141,7 +142,7 @@ export class SalesPage implements OnInit {
       cmds += '   '+'Precio';
       cmds += newLine;
       for(var i=0;i<saleInfo.details.length;i++){
-      cmds += JSON.stringify(saleInfo.details[i].code)+'  -  ';
+      cmds += parseInt(saleInfo.details[i].code)+'  -  ';
       cmds += JSON.stringify(saleInfo.details[i].name).substring(1,5);
       cmds += '  -  $'+JSON.stringify(saleInfo.details[i].price);
       cmds += newLine;
@@ -226,7 +227,8 @@ export class SalesPage implements OnInit {
       componentProps: {
         ticket: selected[0].ticket,
         total: selected[0].total,
-        date: selected[0].date
+        date: selected[0].date,
+        sale: selected[0].payment
       }
     })
 

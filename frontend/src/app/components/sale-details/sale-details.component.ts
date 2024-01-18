@@ -2,6 +2,8 @@ import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
 import { ModalController, AlertController } from '@ionic/angular';
 import { DatatableComponent, SelectionType, id } from '@swimlane/ngx-datatable';
 import moment from 'moment';
+import {  JSPrintManager, InstalledPrinter, ClientPrintJob } from 'jsprintmanager';
+import { NavParams } from '@ionic/angular';
 
 //Services
 import { UiUtilsService } from 'src/app/services/ui-utils.service';
@@ -32,17 +34,20 @@ export class SaleDetailsComponent implements OnInit {
   details: any[];
   changes: any[];
   currentUser: any;
+  payment: any;
 
   constructor(
     private modalCtrl: ModalController,
     private uiUtils: UiUtilsService,
     private alertCtrl: AlertController,
     private salesService: SalesService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private navParams: NavParams
   ) { 
     this.employeeService.currentEmployee.subscribe((user) => {
       this.currentUser = user;
     });
+    this.payment = this.navParams.get('sale');
   }
 
   ionViewDidEnter(){
@@ -262,8 +267,56 @@ export class SaleDetailsComponent implements OnInit {
     }
   }
 
-  onPrint(){
-    console.log("Hola")
-  }
+  async print() {
+    JSPrintManager.auto_reconnect = true;
+    await JSPrintManager.start()
+
+    // Create a ClientPrintJob
+    var cpj = new ClientPrintJob();
+    // Set Printer type (Refer to the help, there many of them!)
+    cpj.clientPrinter = new InstalledPrinter('ZJ-58 11.3.0.1 U');
+
+    // Resto del código de impresión
+    var esc = '\x1B'; //ESC byte in hex notation
+    var newLine = '\x0A'; //LF byte in hex notation
+
+    var cmds = esc + "@"; //Initializes the printer (ESC @)
+    cmds += esc + '!' + '\x18'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+    cmds += 'Disfraces Matatena'; //text to print
+    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+    cmds += newLine + newLine;
+    cmds += 'No. de renta: '+ this.ticket;
+    cmds += newLine;
+    cmds += JSON.stringify(this.date);
+    cmds += newLine+newLine;
+    cmds += 'ID'+'     ';
+    cmds += 'Producto';
+    cmds += '   '+'Precio';
+    cmds += newLine;
+    for(var i=0;i<this.details.length;i++){
+      cmds += parseInt(this.details[i].product.code)+'  -  ';
+      cmds += JSON.stringify(this.details[i].product.name).substring(1,5);
+      cmds += '  -  $'+JSON.stringify(this.details[i].product.price);
+      cmds += newLine;
+      }
+    cmds += newLine;
+    cmds += newLine;
+    cmds += 'Metodo de pago: '+ this.payment;
+    cmds += newLine;
+    cmds += esc + '!' + '\x16'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
+    cmds += 'TOTAL: $'+ this.total;
+    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+    cmds += newLine;
+    cmds += esc + '!' + '\x16'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
+    // cmds += 'DEPOSITO: $'+ saleInfo.deposit;
+    cmds += esc + '!' + '\x00'; 
+    cmds += newLine + newLine;
+    cmds += newLine+newLine+newLine+newLine;
+
+    cpj.printerCommands = cmds;
+
+    // Send print job to printer!
+    cpj.sendToClient()
+}
 
 }
