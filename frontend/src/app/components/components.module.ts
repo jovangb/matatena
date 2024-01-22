@@ -14,6 +14,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ChangeDetailModalComponent } from './change-detail-modal/change-detail-modal.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { RentDetailModalComponent } from './rent-detail-modal/rent-detail-modal.component';
+import { RentTicketModalComponent } from './rent-ticket-modal/rent-ticket-modal.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { RentDetailModalComponent } from './rent-detail-modal/rent-detail-modal.
     ProductEditionModalComponent,
     SaleDetailsComponent,
     ChangeDetailModalComponent,
-    RentDetailModalComponent
+    RentDetailModalComponent,
+    RentTicketModalComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +41,8 @@ import { RentDetailModalComponent } from './rent-detail-modal/rent-detail-modal.
     ProductEditionModalComponent,
     SaleDetailsComponent,
     ChangeDetailModalComponent,
-    RentDetailModalComponent
+    RentDetailModalComponent,
+    RentTicketModalComponent
   ]
 })
 export class ComponentsModule { }

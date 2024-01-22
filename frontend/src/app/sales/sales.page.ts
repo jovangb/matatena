@@ -135,7 +135,7 @@ export class SalesPage implements OnInit {
       cmds += newLine + newLine;
       cmds += 'No. de ticket: '+this.lastTicketNumber;
       cmds += newLine;
-      cmds += saleInfo.date;
+      cmds += moment(saleInfo.date).locale('es').format('LLL');
       cmds += newLine+newLine;
       cmds += 'ID'+'     ';
       cmds += 'Producto';

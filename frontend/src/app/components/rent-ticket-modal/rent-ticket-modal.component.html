@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="ion-text-center">Ticket: {{ticket}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+      <div class="row px-2 mb-2 mt-2">
+        <div class="col d-grid">
+          <button class="btn btn-primary" (click)="print()">
+            REEMPRIMIR TICKET
+          </button>
+        </div>
+      </div>
+</ion-content>

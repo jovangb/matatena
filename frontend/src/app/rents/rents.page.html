@@ -114,6 +114,8 @@
             [headerHeight]="50"
             [footerHeight]="50"
             [scrollbarH]="true"
+            [selectionType]="SelectionType.single"
+            (select)="onSelectRent($event)"
             >
               <ng-template #totalTemplate let-row="row" let-value="value" let-i="index">
                 $ {{value}}

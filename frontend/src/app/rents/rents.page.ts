@@ -1,7 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import moment from 'moment';
 import { ModalController } from '@ionic/angular';
-import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import esLocale from '@fullcalendar/core/locales/es';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -14,6 +14,7 @@ import {  JSPrintManager, InstalledPrinter, ClientPrintJob } from 'jsprintmanage
 import { Product } from '../interfaces/product';
 import { Rent } from '../interfaces/rent';
 
+
 //Services
 import { UiUtilsService } from '../services/ui-utils.service';
 import { ProductService } from '../services/product.service';
@@ -23,6 +24,7 @@ import { CalendarOptions } from '@fullcalendar/core';
 //Components
 import { RentDetailModalComponent } from '../components/rent-detail-modal/rent-detail-modal.component';
 import { FullCalendarComponent } from '@fullcalendar/angular';
+import { RentTicketModalComponent } from '../components/rent-ticket-modal/rent-ticket-modal.component'
 
 
 @Component({
@@ -58,6 +60,7 @@ export class RentsPage implements OnInit {
   rows = [];
   temp = [];
   rentsList: Rent[] = [];
+  SelectionType = SelectionType
 
   //Class variables
   selected: 'rent' | 'manageRents' = 'manageRents';
@@ -168,6 +171,27 @@ export class RentsPage implements OnInit {
     modal.onDidDismiss()
     .then(() => {
       this.calendarEvents = [];
+      this.getRents();
+    });
+  }
+
+  async onSelectRent({selected}){
+    const modal = await this.modalCtrl.create({
+      component: RentTicketModalComponent,
+      cssClass: 'rent-ticket-modal',
+      componentProps: {
+        ticket: selected[0].ticket,
+        total: selected[0].total,
+        date: selected[0].date,
+        payment: selected[0].payment,
+        product: selected[0].product,
+        deposit: selected[0].deposit
+      }
+    })
+
+    modal.present();
+    modal.onDidDismiss()
+    .then(() => {
       this.getRents();
     });
   }

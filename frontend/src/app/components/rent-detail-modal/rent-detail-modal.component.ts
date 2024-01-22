@@ -94,7 +94,7 @@ export class RentDetailModalComponent implements OnInit {
     cmds += newLine + newLine;
     cmds += 'No. de renta: '+ this.ticket;
     cmds += newLine;
-    cmds += JSON.stringify(saleInfo.date);
+    cmds += moment(saleInfo.date).locale('es').format('LLL');
     cmds += newLine+newLine;
     cmds += 'ID'+'     ';
     cmds += 'Producto';
